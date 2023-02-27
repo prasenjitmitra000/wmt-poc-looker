@@ -69,9 +69,13 @@ view: customer_order {
   }
 
   dimension: customer_id {
-    type: number
+    type: string
     # hidden: yes
     sql: ${TABLE}.customer_id ;;
+  }
+  measure: unique_users {
+    type: number
+    sql: count(${customer_id}) ;;
   }
 
   dimension: email {
@@ -88,6 +92,10 @@ view: customer_order {
     type: number
     sql: ${TABLE}.order_id ;;
   }
+  measure: total_orders {
+    type: number
+    sql: count(${order_id}) ;;
+  }
 
   dimension: payment_status {
     type: string
@@ -96,7 +104,8 @@ view: customer_order {
 
   dimension: shipping_state {
     type: string
-    sql: ${TABLE}.shipping_state ;;
+    map_layer_name: countries
+    sql: (case when ${TABLE}.shipping_state = "asia" then "ABB" when ${TABLE}.shipping_state = "india" then "IND" when ${TABLE}.shipping_state = "USA" then "USA" end) ;;
   }
 
   dimension_group: timestamp {

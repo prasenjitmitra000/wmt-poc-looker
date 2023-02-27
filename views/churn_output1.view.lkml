@@ -8,20 +8,17 @@ view: churn_output1 {
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
 
-  dimension: id {
+  dimension: customer_id {
     primary_key: yes
     type: number
-    sql: ${TABLE}.id ;;
+    # hidden: yes
+    sql: ${TABLE}.CustomerID ;;
   }
 
   # Here's what a typical dimension looks like in LookML.
   # A dimension is a groupable field that can be used to filter query results.
   # This dimension will be called "Churn" in Explore.
 
-  dimension: churn {
-    type: number
-    sql: ${TABLE}.churn ;;
-  }
 
   dimension: city_tier {
     type: number
@@ -33,14 +30,17 @@ view: churn_output1 {
     sql: ${TABLE}.Complain ;;
   }
 
-  dimension: customer_id {
+  dimension: id {
     type: number
-    # hidden: yes
-    sql: ${TABLE}.CustomerID ;;
+    sql: ${TABLE}.id ;;
   }
 
   dimension: day_since_last_order {
     type: number
+    sql: ${TABLE}.DaySinceLastOrder ;;
+  }
+  measure: avg_day_since_last_order {
+    type: average
     sql: ${TABLE}.DaySinceLastOrder ;;
   }
 
@@ -49,8 +49,8 @@ view: churn_output1 {
     sql: ${TABLE}.Gender ;;
   }
 
-  dimension: hour_spend_on_app {
-    type: number
+  measure: hour_spend_on_app {
+    type: sum
     sql: ${TABLE}.HourSpendOnApp ;;
   }
 
@@ -83,9 +83,22 @@ view: churn_output1 {
     sql: ${TABLE}.OrderCount ;;
   }
 
+  measure: total_orders {
+    type: sum
+    sql: ${order_count} ;;
+  }
+
   dimension: predicted_label {
     type: number
     sql: ${TABLE}.predicted_label ;;
+  }
+  dimension: predicted_label_yesno {
+    type: string
+    sql: (case when ${predicted_label} = 1 then "Yes" else "No" end) ;;
+  }
+  measure: predicted_label_count {
+    type: number
+    sql: count(${predicted_label}) ;;
   }
 
   # This field is hidden, which means it will not show up in Explore.
@@ -125,10 +138,55 @@ view: churn_output1 {
     type: number
     sql: ${TABLE}.WarehouseToHome ;;
   }
+  dimension: complain_null {
+    type: number
+    hidden: yes
+    sql: case ${complain} when 1 then 1 else null end;;
+  }
+  measure: sum_complain_null {
+    hidden: yes
+    type: sum
+    sql: ${complain_null};;
+  }
+  measure: complain_rate {
+    type: number
+    sql: round((${sum_complain_null}/count(${complain}) * 100),2);;
+  }
+  dimension: satis_null {
+    type: number
+    hidden: yes
+    sql: case ${satisfaction_score} when 4 then 1 when 5 then 1 else null end;;
+  }
+  measure: sum_satis_null {
+    hidden: yes
+    type: sum
+    sql: ${satis_null};;
+  }
+  measure: satisfied_customers {
+    type: number
+    sql: round((${sum_satis_null}/count(${satisfaction_score}) * 100),2);;
+  }
+  dimension: precision_null {
+    type: number
+    hidden: yes
+    sql: case ${predicted_label} when 1 then 1 else null end;;
+  }
+  measure: sum_precision_null {
+    hidden: yes
+    type: sum
+    sql: ${precision_null};;
+  }
+  measure: precision {
+    type: number
+    sql: round((${sum_precision_null}/count(${predicted_label}) * 100),2);;
+  }
 
   measure: count {
     type: count
     drill_fields: [id, customers.name, customers.customer_id]
+  }
+  measure: unique_users {
+    type: count
   }
 }
 

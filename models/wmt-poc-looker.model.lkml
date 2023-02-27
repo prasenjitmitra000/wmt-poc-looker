@@ -56,11 +56,22 @@ explore: order_churn {}
 explore: customers {}
 
 explore: churn_output1 {
-  join: customers {
+  join: customers{
     type: left_outer
     sql_on: ${churn_output1.customer_id} = ${customers.customer_id} ;;
     relationship: many_to_one
   }
+  join: customer_order{
+    type: full_outer
+    sql_on: ${churn_output1.customer_id} = ${customer_order.customer_id} ;;
+    relationship: many_to_one
+  }
+  join: order_churn{
+    type: left_outer
+    sql_on: ${churn_output1.id} = ${order_churn.id} ;;
+    relationship: many_to_one
+  }
+
 
   join: churn_output1__predicted_label_probs {
     view_label: "Churn Output1: Predicted Label Probs"
