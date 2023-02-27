@@ -94,7 +94,7 @@ view: churn_output1 {
   }
   dimension: predicted_label_yesno {
     type: string
-    sql: (case when ${predicted_label} = 1 then "Yes" else "No" end) ;;
+    sql: (case when ${predicted_label} = 0 then "Yes" else "No" end) ;;
   }
   measure: predicted_label_count {
     type: number
@@ -169,7 +169,7 @@ view: churn_output1 {
   dimension: precision_null {
     type: number
     hidden: yes
-    sql: case ${predicted_label} when 1 then 1 else null end;;
+    sql: case ${predicted_label} when 0 then 1 else null end;;
   }
   measure: sum_precision_null {
     hidden: yes
