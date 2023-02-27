@@ -4,7 +4,7 @@ view: churn_output1 {
   # to be used for all fields in this view.
   sql_table_name: `Customer_Order.Churn_output1`
     ;;
-  drill_fields: [id]
+  drill_fields: [customer_id, city_tier, gender,marital_status,preferred_login_device, prefered_order_cat, preferred_payment_mode,warehouse_to_home,tenure,satisfaction_score,complain,day_since_last_order,total_number_of_device_registered,total_orders]
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
 
@@ -71,7 +71,7 @@ view: churn_output1 {
   measure: total_number_of_device_registered {
     type: sum
     sql: ${number_of_device_registered} ;;
-  }
+     }
 
   measure: average_number_of_device_registered {
     type: average
@@ -95,7 +95,7 @@ view: churn_output1 {
   dimension: predicted_label_yesno {
     type: string
     sql: (case when ${predicted_label} = 0 then "Yes" else "No" end) ;;
-  }
+     }
   measure: predicted_label_count {
     type: number
     sql: count(${predicted_label}) ;;
@@ -183,11 +183,12 @@ view: churn_output1 {
 
   measure: count {
     type: count
-    drill_fields: [id, customers.name, customers.customer_id]
+    drill_fields: [customer_id, city_tier, gender,marital_status,preferred_login_device, prefered_order_cat, preferred_payment_mode,warehouse_to_home,tenure,satisfaction_score,complain,day_since_last_order,total_number_of_device_registered,total_orders]
   }
+
   measure: unique_users {
     type: count
-  }
+     }
 }
 
 # The name of this view in Looker is "Churn Output1 Predicted Label Probs"
