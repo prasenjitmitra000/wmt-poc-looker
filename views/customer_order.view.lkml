@@ -69,6 +69,7 @@ view: customer_order {
   }
 
   dimension: customer_id {
+    primary_key: yes
     type: string
     # hidden: yes
     sql: ${TABLE}.customer_id ;;
